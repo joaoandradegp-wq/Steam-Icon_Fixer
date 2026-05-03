@@ -138,7 +138,8 @@ Caso necessário:
 ## 📸 Preview
 
 <p align="center">
-  <img width="500" src="https://via.placeholder.com/500x300.png?text=Steam+Icon+Fixer">
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/def3f65a-6062-4f5f-a252-4d5be2de768d" />
+
 </p>
 
 ---
