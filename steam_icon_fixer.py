@@ -67,7 +67,7 @@ def download_file(url, dest):
 
 
 # ==========================================
-# PROCESSAR
+# PROCESSAR (CORRIGIDO)
 # ==========================================
 def process_file(file_path, log_callback):
     url = ""
@@ -88,47 +88,83 @@ def process_file(file_path, log_callback):
     if not icon_file:
         return False
 
-    icon_name = os.path.basename(icon_file)
     icon_dir = os.path.dirname(icon_file)
+    original_name = os.path.basename(icon_file)
+
+    # 🔥 Remove qualquer _new existente
+    base_name = original_name.replace("_new", "")
+
+    name, ext = os.path.splitext(base_name)
+
+    clean_name = f"{name}{ext}"        # nome REAL da Steam
+    new_name = f"{name}_new{ext}"      # nome final
+
+    icon_file_original = os.path.join(icon_dir, clean_name)
+    icon_file_new = os.path.join(icon_dir, new_name)
 
     os.makedirs(icon_dir, exist_ok=True)
 
-    if os.path.exists(icon_file):
-        try:
-            os.remove(icon_file)
-        except:
-            pass
+    # 🔥 Limpa qualquer versão anterior do ícone
+    for f in os.listdir(icon_dir):
+        if f.startswith(name) and f.endswith(ext):
+            try:
+                os.remove(os.path.join(icon_dir, f))
+            except:
+                pass
 
-    icon_url = f"https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/{gameid}/{icon_name}"
+    icon_url = f"https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/apps/{gameid}/{clean_name}"
 
-    log_callback(f"Baixando: {icon_name}")
+    log_callback(f"Baixando: {new_name}")
 
-    if not download_file(icon_url, icon_file):
-        log_callback(f"[ERRO] {icon_name}")
+    # baixa com nome original
+    if not download_file(icon_url, icon_file_original):
+        log_callback(f"[ERRO DOWNLOAD] {clean_name}")
         return False
 
-    if os.path.getsize(icon_file) < MIN_ICON_SIZE:
-        os.remove(icon_file)
-        log_callback(f"[INVALIDO] {icon_name}")
+    # valida
+    if os.path.getsize(icon_file_original) < MIN_ICON_SIZE:
+        os.remove(icon_file_original)
+        log_callback(f"[INVALIDO] {clean_name}")
+        return False
+
+    # renomeia para _new
+    try:
+        os.rename(icon_file_original, icon_file_new)
+    except Exception as e:
+        log_callback(f"[ERRO RENOMEAR] {e}")
+        return False
+
+    # atualiza o .url
+    try:
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            lines = f.readlines()
+
+        with open(file_path, "w", encoding="utf-8") as f:
+            for line in lines:
+                if line.startswith("IconFile="):
+                    f.write(f"IconFile={icon_file_new}\n")
+                else:
+                    f.write(line)
+
+    except Exception as e:
+        log_callback(f"[ERRO URL] {e}")
         return False
 
     os.utime(file_path, None)
 
-    log_callback(f"[OK] {icon_name}")
+    log_callback(f"[OK] {new_name}")
     return True
 
 
 # ==========================================
-# RESTART EXPLORER
+# LIMPAR CACHE
 # ==========================================
-def restart_explorer(log_callback):
-    log_callback("Reiniciando Explorer...")
+def clear_icon_cache(log_callback):
+    log_callback("Finalizando Explorer...")
 
-    # 1. Mata Explorer
     subprocess.call("taskkill /IM explorer.exe /F", shell=True)
     time.sleep(2)
 
-    # 2. Limpa cache
     subprocess.call("ie4uinit.exe -ClearIconCache", shell=True)
 
     local = os.getenv("LOCALAPPDATA")
@@ -142,14 +178,19 @@ def restart_explorer(log_callback):
                 except:
                     pass
 
-    time.sleep(1)
+    log_callback("Cache limpo. Agora clique em 'Iniciar Explorer'.")
 
-    # 3. Método principal (mais confiável)
-    subprocess.Popen('cmd /c start explorer.exe', shell=True)
 
-    time.sleep(3)
+# ==========================================
+# INICIAR EXPLORER
+# ==========================================
+def start_explorer(log_callback):
+    log_callback("Iniciando Explorer...")
 
-    # 4. Verifica se subiu
+    subprocess.Popen("explorer.exe", shell=True)
+
+    time.sleep(2)
+
     check = subprocess.run(
         'tasklist | findstr explorer.exe',
         shell=True,
@@ -157,29 +198,10 @@ def restart_explorer(log_callback):
         text=True
     )
 
-    # 5. Fallback pesado
-    if "explorer.exe" not in check.stdout.lower():
-        log_callback("Explorer não iniciou. Tentando fallback...")
-
-        subprocess.Popen(
-            os.path.join(os.environ["WINDIR"], "System32", "userinit.exe")
-        )
-
-        time.sleep(3)
-
-    # 6. Última garantia (bruta)
-    check2 = subprocess.run(
-        'tasklist | findstr explorer.exe',
-        shell=True,
-        capture_output=True,
-        text=True
-    )
-
-    if "explorer.exe" not in check2.stdout.lower():
-        log_callback("[ERRO] Explorer não conseguiu iniciar automaticamente!")
-        log_callback("Abra manualmente: Ctrl+Shift+Esc → Arquivo → Executar nova tarefa → explorer.exe")
+    if "explorer.exe" in check.stdout.lower():
+        log_callback("Explorer iniciado com sucesso!")
     else:
-        log_callback("Explorer reiniciado com sucesso!")
+        log_callback("[ERRO] Explorer não iniciou")
 
 
 # ==========================================
@@ -189,7 +211,7 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.title("Steam Icon Fixer")
-        self.root.geometry("600x420")
+        self.root.geometry("600x450")
 
         self.queue = Queue()
 
@@ -202,6 +224,12 @@ class App:
         self.btn_fix = ttk.Button(frame, text="🛠 Corrigir Tudo", command=self.fix)
         self.btn_fix.pack(fill="x", pady=5)
 
+        self.btn_clear = ttk.Button(frame, text="🧹 Limpar Cache", command=self.clear_cache_ui)
+        self.btn_clear.pack(fill="x", pady=5)
+
+        self.btn_explorer = ttk.Button(frame, text="📂 Iniciar Explorer", command=self.start_explorer_ui)
+        self.btn_explorer.pack(fill="x", pady=5)
+
         self.progress = ttk.Progressbar(frame)
         self.progress.pack(fill="x", pady=5)
 
@@ -210,10 +238,8 @@ class App:
 
         self.files = []
 
-        # inicia loop da queue
         self.process_queue()
 
-    # ================= UI THREAD SAFE =================
     def log_msg(self, msg):
         self.queue.put(msg)
 
@@ -229,7 +255,6 @@ class App:
 
         self.root.after(100, self.process_queue)
 
-    # ================= FUNÇÕES =================
     def scan(self):
         self.log_msg("Escaneando Desktop...")
         self.files = find_steam_shortcuts()
@@ -241,6 +266,12 @@ class App:
             return
 
         threading.Thread(target=self.run_fix, daemon=True).start()
+
+    def clear_cache_ui(self):
+        threading.Thread(target=clear_icon_cache, args=(self.log_msg,), daemon=True).start()
+
+    def start_explorer_ui(self):
+        threading.Thread(target=start_explorer, args=(self.log_msg,), daemon=True).start()
 
     def run_fix(self):
         total = len(self.files)
@@ -259,8 +290,7 @@ class App:
             self.queue.put(("progress", i + 1))
 
         if alterou:
-            restart_explorer(self.log_msg)
-            self.log_msg("Cache reconstruído!")
+            clear_icon_cache(self.log_msg)
         else:
             self.log_msg("Nada para corrigir")
 
