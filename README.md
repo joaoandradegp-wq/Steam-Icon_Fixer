@@ -155,5 +155,5 @@ Caso necessário:
 ---
 
 <p align="center">
-Feito para automatizar o que ninguém deveria corrigir manualmente 😄
+Feito para automatizar o que ninguém deveria corrigir manualmente. 😄
 </p>
