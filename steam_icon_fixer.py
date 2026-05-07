@@ -210,7 +210,7 @@ def start_explorer(log_callback):
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.title("Steam Icon Fixer")
+        self.root.title("Steam Icon Fixer 1.0 - phobosfreeware.blogspot.com")
         self.root.geometry("600x450")
 
         self.queue = Queue()
