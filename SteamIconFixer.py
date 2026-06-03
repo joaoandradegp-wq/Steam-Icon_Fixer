@@ -87,26 +87,50 @@ def process_file(file_path, log_callback):
     icon_dir = os.path.dirname(icon_file)
     original_name = os.path.basename(icon_file)
 
-    base_name = original_name.replace("_new", "")
+    import re
 
-    name, ext = os.path.splitext(base_name)
+    base_name = original_name
 
-    clean_name = f"{name}{ext}"
-    new_name = f"{name}_new{ext}"
+    match = re.match(r"^(.*?)(_new(\d+)?)?(\.[^.]+)$",base_name,re.IGNORECASE)
+
+    if match:
+        root_name = match.group(1)
+        current_num = match.group(3)
+        ext = match.group(4)
+
+        if current_num:
+            next_num = int(current_num) + 1
+        elif "_new" in base_name.lower():
+            next_num = 2
+        else:
+            next_num = 1
+
+    else:
+        root_name, ext = os.path.splitext(base_name)
+        next_num = 1
+
+    clean_name = f"{root_name}{ext}"
+    new_name = f"{root_name}_new{next_num}{ext}"
 
     icon_file_original = os.path.join(icon_dir, clean_name)
     icon_file_new = os.path.join(icon_dir, new_name)
 
     os.makedirs(icon_dir, exist_ok=True)
 
-    log_callback(f"Limpando ícones antigos de {name}...")
+    log_callback(f"Limpando ícones antigos de {root_name}...")
 
     for f in os.listdir(icon_dir):
-        if f.lower().startswith(name.lower()):
-            try:
+        try:
+            file_root = re.sub(r"_new\d*","",os.path.splitext(f)[0],flags=re.IGNORECASE)
+
+            if (
+                file_root.lower() == root_name.lower()
+                and f.lower().endswith(".ico")
+            ):
                 os.remove(os.path.join(icon_dir, f))
-            except:
-                pass
+
+        except Exception:
+            pass
 
     icon_url = (
         "https://cdn.cloudflare.steamstatic.com/"
@@ -328,7 +352,10 @@ class App:
 
         self.queue.put(("progress", 0))
 
-        self.progress["maximum"] = total
+        self.root.after(
+            0,
+            lambda: self.progress.configure(maximum=total)
+        )
 
         alterou = False
 
