@@ -1,8 +1,8 @@
 python -m PyInstaller ^
-steam_icon_fixer.py ^
+SteamIconFixer.py ^
 --onefile ^
 --noconsole ^
---name steam_icon_fixer ^
+--name SteamIconFixer ^
 --icon=ico.ico ^
 --clean ^
 --noupx
