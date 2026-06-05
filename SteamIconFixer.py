@@ -3,6 +3,7 @@ import threading
 import time
 import subprocess
 import requests
+import ctypes
 import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 from queue import Queue
@@ -167,6 +168,13 @@ def process_file(file_path, log_callback):
                     f.write(line)
 
         os.utime(file_path, None)
+
+        ctypes.windll.shell32.SHChangeNotify(
+            0x00002000,
+            0x0005,
+            file_path,
+            None
+        )
 
     except Exception as e:
         log_callback(f"[ERRO URL] {e}")
