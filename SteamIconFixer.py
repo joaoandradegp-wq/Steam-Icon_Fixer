@@ -1,7 +1,5 @@
 import os
 import threading
-import time
-import subprocess
 import requests
 import ctypes
 import tkinter as tk
@@ -184,49 +182,6 @@ def process_file(file_path, log_callback):
     return True
 
 
-def clear_icon_cache(log_callback):
-    log_callback("Finalizando Explorer...")
-
-    subprocess.call("taskkill /IM explorer.exe /F", shell=True)
-
-    time.sleep(2)
-
-    subprocess.call("ie4uinit.exe -ClearIconCache", shell=True)
-
-    local = os.getenv("LOCALAPPDATA")
-    explorer_path = os.path.join(local, "Microsoft\\Windows\\Explorer")
-
-    if os.path.isdir(explorer_path):
-        for f in os.listdir(explorer_path):
-            if "iconcache" in f.lower():
-                try:
-                    os.remove(os.path.join(explorer_path, f))
-                except:
-                    pass
-
-    log_callback("Cache limpo. Agora clique em 'Iniciar Explorer'.")
-
-
-def start_explorer(log_callback):
-    log_callback("Iniciando Explorer...")
-
-    subprocess.Popen("explorer.exe", shell=True)
-
-    time.sleep(2)
-
-    check = subprocess.run(
-        'tasklist | findstr explorer.exe',
-        shell=True,
-        capture_output=True,
-        text=True
-    )
-
-    if "explorer.exe" in check.stdout.lower():
-        log_callback("Explorer iniciado com sucesso!")
-    else:
-        log_callback("[ERRO] Explorer não iniciou")
-
-
 class App:
     def __init__(self, root):
         self.root = root
@@ -235,7 +190,7 @@ class App:
             "Steam Icon Fixer 1.1 - phobosfreeware.blogspot.com"
         )
 
-        self.root.geometry("600x450")
+        self.root.geometry("600x380")
 
         self.queue = Queue()
 
@@ -256,22 +211,6 @@ class App:
             state="disabled"
         )
         self.btn_fix.pack(fill="x", pady=5)
-
-        self.btn_clear = ttk.Button(
-            frame,
-            text="🧹 Limpar Cache",
-            command=self.clear_cache_ui,
-            state="disabled"
-        )
-        self.btn_clear.pack(fill="x", pady=5)
-
-        self.btn_explorer = ttk.Button(
-            frame,
-            text="📂 Iniciar Explorer",
-            command=self.start_explorer_ui,
-            state="disabled"
-        )
-        self.btn_explorer.pack(fill="x", pady=5)
 
         self.progress = ttk.Progressbar(frame)
         self.progress.pack(fill="x", pady=5)
@@ -323,38 +262,6 @@ class App:
             daemon=True
         ).start()
 
-    def clear_cache_ui(self):
-        self.btn_clear.config(state="disabled")
-
-        threading.Thread(
-            target=self.clear_cache_worker,
-            daemon=True
-        ).start()
-
-    def clear_cache_worker(self):
-        clear_icon_cache(self.log_msg)
-
-        self.root.after(
-            0,
-            lambda: self.btn_explorer.config(state="normal")
-        )
-
-    def start_explorer_ui(self):
-        self.btn_explorer.config(state="disabled")
-
-        threading.Thread(
-            target=self.start_explorer_worker,
-            daemon=True
-        ).start()
-
-    def start_explorer_worker(self):
-        start_explorer(self.log_msg)
-
-        self.root.after(
-            0,
-            lambda: self.btn_scan.config(state="normal")
-        )
-
     def run_fix(self):
         total = len(self.files)
 
@@ -380,12 +287,12 @@ class App:
 
         if alterou:
             self.log_msg(
-                "Correção concluída. Clique em 'Limpar Cache'."
+                "Correção concluída com sucesso."
             )
 
             self.root.after(
                 0,
-                lambda: self.btn_clear.config(state="normal")
+                lambda: self.btn_fix.config(state="normal")
             )
         else:
             self.log_msg("Nada para corrigir")
