@@ -1,7 +1,7 @@
 <h1 align="center">🎮 Steam Icon Fixer</h1>
 
 <p align="center">
-Ferramenta simples e automatizada para corrigir ícones quebrados ou ausentes de jogos da Steam no Desktop.
+Ferramenta simples e automatizada para corrigir ícones quebrados, ausentes ou em branco de jogos da Steam no Desktop.
 </p>
 
 <p align="center">
@@ -15,11 +15,11 @@ Ferramenta simples e automatizada para corrigir ícones quebrados ou ausentes de
 ## 📌 Sobre
 
 O **Steam Icon Fixer** foi desenvolvido para resolver um problema comum no Windows:  
-ícones de jogos da Steam que desaparecem, ficam genéricos ou quebrados no Desktop.
+ícones de jogos da Steam que desaparecem, ficam genéricos, quebrados ou totalmente em branco no Desktop.
 
 O aplicativo escaneia automaticamente os atalhos `.url`, identifica os jogos da Steam e baixa novamente os ícones originais diretamente da CDN oficial da Steam.
 
-Todo o processo é automatizado, incluindo limpeza de cache e reinicialização do Explorer.
+Todo o processo é automatizado, incluindo atualização dos atalhos e notificação imediata do Windows para recarregar os ícones sem necessidade de reiniciar o Explorer.
 
 ---
 
@@ -72,18 +72,22 @@ Atualiza automaticamente o caminho do ícone dentro do arquivo `.url`, garantind
 <tr>
 <td width="50%" valign="top" style="border: none; padding: 15px;">
 
-### 🧹 LIMPEZA DE CACHE
+### 🆕 SISTEMA PROGRESSIVO DE ÍCONES
 
-Remove o cache de ícones do Windows para forçar a atualização visual imediata após as correções.
+A cada correção o programa gera uma nova versão do ícone:
+
+`_new1`, `_new2`, `_new3`, `_new4`...
+
+Isso força o Windows a utilizar um novo arquivo e reduz drasticamente problemas causados por cache persistente.
 
 <br><br>
 </td>
 
 <td width="50%" valign="top" style="border: none; padding: 15px;">
 
-### 📂 CONTROLE DO EXPLORER
+### ⚡ ATUALIZAÇÃO IMEDIATA DO WINDOWS
 
-Finaliza e reinicia o Windows Explorer automaticamente para aplicar as mudanças corretamente.
+Após corrigir o atalho, o programa notifica automaticamente o Windows Shell para atualizar os ícones sem necessidade de reiniciar o Explorer.
 
 <br>
 </td>
@@ -94,7 +98,7 @@ Finaliza e reinicia o Windows Explorer automaticamente para aplicar as mudanças
 
 ### 🧠 TRATAMENTO INTELIGENTE DE ARQUIVOS
 
-Remove versões antigas de ícones, evita duplicações e garante consistência nos nomes (_new).
+Remove versões antigas relacionadas ao mesmo ícone, evita duplicações e mantém consistência entre os atalhos e arquivos baixados.
 
 <br><br>
 </td>
@@ -115,23 +119,23 @@ Interface simples com barra de progresso e log em tempo real mostrando cada etap
 
 ## 🚀 Como usar
 
-1. Clique em **Escanear Desktop**  
-2. Clique em **Corrigir Tudo**  
-3. Aguarde o processo automático  
-4. O programa irá limpar o cache e atualizar os ícones  
+1. Clique em **Escanear Desktop**
+2. Clique em **Corrigir Tudo**
+3. Aguarde o processamento automático
+4. Os atalhos serão atualizados automaticamente
 
-Caso necessário:
-- Use **Limpar Cache** manualmente  
-- Clique em **Iniciar Explorer**  
+Não é mais necessário limpar cache manualmente nem reiniciar o Explorer.
 
 ---
 
 ## 🎯 Problema resolvido
 
-- Ícones genéricos da Steam  
-- Ícones quebrados ou ausentes  
-- Cache do Windows desatualizado  
-- Atalhos com caminhos inválidos  
+- Ícones genéricos da Steam
+- Ícones quebrados ou ausentes
+- Ícones totalmente brancos
+- Cache persistente do Windows
+- Atalhos com caminhos inválidos
+- Reutilização incorreta de ícones antigos pelo Windows
 
 ---
 
