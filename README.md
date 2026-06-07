@@ -142,7 +142,7 @@ Não é mais necessário limpar cache manualmente nem reiniciar o Explorer.
 ## 📸 Preview
 
 <p align="center">
-  <img width="500" alt="image" src="https://github.com/user-attachments/assets/636735e3-ea96-4b49-8aad-f3fc3a610fc5" />
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/4f209275-ce40-401c-924f-ad2906ee4ccd" />
 </p>
 
 ---
