@@ -116,7 +116,7 @@ def process_file(file_path, log_callback):
 
     os.makedirs(icon_dir, exist_ok=True)
 
-    log_callback(f"Limpando ícones antigos de {root_name}...")
+    log_callback(f"Cleaning old icons for {root_name}...")
 
     for f in os.listdir(icon_dir):
         try:
@@ -136,10 +136,10 @@ def process_file(file_path, log_callback):
         f"steamcommunity/public/images/apps/{gameid}/{clean_name}"
     )
 
-    log_callback(f"Baixando: {clean_name}")
+    log_callback(f"Downloading: {clean_name}")
 
     if not download_file(icon_url, icon_file_original):
-        log_callback(f"[ERRO DOWNLOAD] {clean_name}")
+        log_callback(f"[DOWNLOAD ERROR] {clean_name}")
         return False
 
     if os.path.getsize(icon_file_original) < MIN_ICON_SIZE:
@@ -148,13 +148,13 @@ def process_file(file_path, log_callback):
         except:
             pass
 
-        log_callback(f"[INVALIDO] {clean_name}")
+        log_callback(f"[INVALID] {clean_name}")
         return False
 
     try:
         os.rename(icon_file_original, icon_file_new)
     except Exception as e:
-        log_callback(f"[ERRO RENOMEAR] {e}")
+        log_callback(f"[RENAME ERROR] {e}")
         return False
 
     try:
@@ -175,7 +175,7 @@ def process_file(file_path, log_callback):
         )
 
     except Exception as e:
-        log_callback(f"[ERRO URL] {e}")
+        log_callback(f"[URL ERROR] {e}")
         return False
 
     log_callback(f"[OK] {new_name}")
@@ -199,14 +199,14 @@ class App:
 
         self.btn_scan = ttk.Button(
             frame,
-            text="🔍 Escanear Desktop",
+            text="🔍 Scan Desktop",
             command=self.scan
         )
         self.btn_scan.pack(fill="x", pady=5)
 
         self.btn_fix = ttk.Button(
             frame,
-            text="🛠 Corrigir Tudo",
+            text="🛠 Fix All",
             command=self.fix,
             state="disabled"
         )
@@ -238,21 +238,18 @@ class App:
         self.root.after(100, self.process_queue)
 
     def scan(self):
-        self.log_msg("Escaneando Desktop...")
+        self.log_msg("Scanning Desktop...")
 
         self.files = find_steam_shortcuts()
 
-        self.log_msg(f"Encontrados: {len(self.files)} atalhos")
+        self.log_msg(f"Found: {len(self.files)} shortcuts")
 
         if self.files:
             self.btn_fix.config(state="normal")
 
     def fix(self):
         if not self.files:
-            messagebox.showwarning(
-                "Aviso",
-                "Faça o scan primeiro"
-            )
+            messagebox.showwarning("Warning","Please scan first")
             return
 
         self.btn_fix.config(state="disabled")
@@ -272,7 +269,7 @@ class App:
             lambda: self.progress.configure(maximum=total)
         )
 
-        alterou = False
+        changed = False
 
         for i, file in enumerate(self.files):
             result = process_file(
@@ -281,30 +278,23 @@ class App:
             )
 
             if result:
-                alterou = True
+                changed = True
 
             self.queue.put(("progress", i + 1))
 
-        if alterou:
-            self.log_msg(
-                "Correção concluída com sucesso."
-            )
+        if changed:
+            self.log_msg("Repair completed successfully.")
 
-            self.root.after(
-                0,
+            self.root.after(0,
                 lambda: self.btn_fix.config(state="normal")
             )
         else:
-            self.log_msg("Nada para corrigir")
+            self.log_msg("Nothing to repair")
 
-        self.log_msg("Finalizado!")
+        self.log_msg("Finished!")
 
-        self.root.after(
-            0,
-            lambda: messagebox.showinfo(
-                "Finalizado",
-                "Processo concluído!"
-            )
+        self.root.after(0,
+            lambda: messagebox.showinfo("Completed","Process completed!")
         )
 
 
