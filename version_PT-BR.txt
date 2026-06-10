@@ -18,7 +18,7 @@ VSVersionInfo(
           StringStruct('FileDescription', 'Steam Icon Fixer'),
           StringStruct('FileVersion', '1.1.0'),
           StringStruct('InternalName', 'SteamIconFixer'),
-          StringStruct('OriginalFilename', 'SteamIconFixer.exe'),
+          StringStruct('OriginalFilename', 'SteamIconFixer_PT-BR.exe'),
           StringStruct('ProductName', 'Steam Icon Fixer'),
           StringStruct('ProductVersion', '1.1.0')
         ]
