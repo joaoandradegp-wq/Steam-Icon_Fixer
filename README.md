@@ -25,6 +25,7 @@ The entire process is automated, including shortcut updates and immediate Window
 
 ## ⚙️ Features
 
+<br>
 <table style="border: none; border-collapse: collapse;">
 
 <tr>
