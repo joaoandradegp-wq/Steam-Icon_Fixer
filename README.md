@@ -148,16 +148,6 @@ There is no longer any need to manually clear the icon cache or restart Explorer
 
 ---
 
-## 📥 Download
-
-<p align="center">
-  <a href="#">
-    <img src="https://img.shields.io/badge/Download-Steam%20Icon%20Fixer-blue?style=for-the-badge">
-  </a>
-</p>
-
----
-
 <p align="center">
 Built to automate something nobody should have to fix manually. 😄
 </p>
