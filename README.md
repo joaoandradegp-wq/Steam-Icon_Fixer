@@ -8,6 +8,8 @@ Simple and automated tool for fixing broken, missing, or blank Steam game deskto
   <img src="https://img.shields.io/badge/Status-Active-success">
   <img src="https://img.shields.io/badge/Language-Python-blue">
   <img src="https://img.shields.io/badge/Type-Utility-lightgrey">
+  <img src="https://img.shields.io/badge/Language-Português%20(BR)-009C3B">
+  <img src="https://img.shields.io/badge/Language-English-3C3B6E">
 </p>
 
 ---
