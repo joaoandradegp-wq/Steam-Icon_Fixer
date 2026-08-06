@@ -1,17 +1,12 @@
-<h1 align="center">🎮 Steam Icon Fixer</h1>
+<img width="1024" alt="image" src="https://github.com/user-attachments/assets/c274ea2c-d702-4d51-91a2-8d2e648b3e7e" />
 
-<p align="center">
-Simple and automated tool for fixing broken, missing, or blank Steam game desktop icons.
-</p>
 
-<p align="center">
+<p align="center"><br>
   <img src="https://img.shields.io/badge/Status-Active-success">
   <img src="https://img.shields.io/badge/Language-Python-blue">
   <img src="https://img.shields.io/badge/Type-Utility-lightgrey">
   <img src="https://img.shields.io/badge/Languages-PT--BR%20%7C%20EN-purple">
 </p>
-
----
 
 ## 📌 About
 
