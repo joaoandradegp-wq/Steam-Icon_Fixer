@@ -1,17 +1,8 @@
 python -m PyInstaller ^
-SteamIconFixer_PT-BR.py ^
+SteamIconFixer.py ^
 --noconsole ^
---name SteamIconFixer_PT-BR ^
+--name SteamIconFixer ^
 --icon=ico.ico ^
---version-file version_PT-BR.txt ^
---noupx ^
---clean
-
-python -m PyInstaller ^
-SteamIconFixer_ENG.py ^
---noconsole ^
---name SteamIconFixer_ENG ^
---icon=ico.ico ^
---version-file version_ENG.txt ^
+--version-file version.txt ^
 --noupx ^
 --clean

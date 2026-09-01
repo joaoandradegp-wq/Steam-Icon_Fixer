@@ -1,4 +1,6 @@
 import os
+import re
+import locale
 import threading
 import requests
 import ctypes
@@ -7,6 +9,77 @@ from tkinter import ttk, scrolledtext, messagebox
 from queue import Queue
 
 MIN_ICON_SIZE = 2048
+
+
+# ----------------------------------------------------------------------
+# Detecção de idioma do sistema (Windows) / System language detection
+# ----------------------------------------------------------------------
+def get_system_language():
+    """
+    Lê o idioma da interface do Windows (UI Language) e retorna 'pt' ou 'en'.
+    Reads the Windows UI language and returns 'pt' or 'en'.
+    Fallback seguro para 'en' caso algo falhe.
+    """
+    try:
+        lcid = ctypes.windll.kernel32.GetUserDefaultUILanguage()
+        loc_name = locale.windows_locale.get(lcid, "")
+
+        if loc_name.lower().startswith("pt"):
+            return "pt"
+
+        return "en"
+
+    except Exception:
+        return "en"
+
+
+STRINGS = {
+    "pt": {
+        "window_title": "Steam Icon Fixer 1.2 - phobosfreeware.blogspot.com",
+        "btn_scan": "🔍 Escanear Desktop",
+        "btn_fix": "🛠 Corrigir Tudo",
+        "scanning": "Escaneando Desktop...",
+        "found_shortcuts": "Encontrados: {n} atalhos",
+        "warning_title": "Aviso",
+        "scan_first": "Faça o scan primeiro",
+        "cleaning_icons": "Limpando ícones antigos de {name}...",
+        "downloading": "Baixando: {name}",
+        "error_download": "[ERRO DOWNLOAD] {name}",
+        "invalid_icon": "[INVALIDO] {name}",
+        "error_rename": "[ERRO RENOMEAR] {err}",
+        "error_url": "[ERRO URL] {err}",
+        "ok": "[OK] {name}",
+        "fix_success": "Correção concluída com sucesso.",
+        "nothing_to_fix": "Nada para corrigir",
+        "finished_log": "Finalizado!",
+        "finished_title": "Finalizado",
+        "finished_message": "Processo concluído!",
+    },
+    "en": {
+        "window_title": "Steam Icon Fixer 1.2 - phobosfreeware.blogspot.com",
+        "btn_scan": "🔍 Scan Desktop",
+        "btn_fix": "🛠 Fix All",
+        "scanning": "Scanning Desktop...",
+        "found_shortcuts": "Found: {n} shortcuts",
+        "warning_title": "Warning",
+        "scan_first": "Please scan first",
+        "cleaning_icons": "Cleaning old icons for {name}...",
+        "downloading": "Downloading: {name}",
+        "error_download": "[DOWNLOAD ERROR] {name}",
+        "invalid_icon": "[INVALID] {name}",
+        "error_rename": "[RENAME ERROR] {err}",
+        "error_url": "[URL ERROR] {err}",
+        "ok": "[OK] {name}",
+        "fix_success": "Fix completed successfully.",
+        "nothing_to_fix": "Nothing to fix",
+        "finished_log": "Finished!",
+        "finished_title": "Finished",
+        "finished_message": "Process completed!",
+    },
+}
+
+LANG = get_system_language()
+T = STRINGS[LANG]
 
 
 def find_steam_shortcuts():
@@ -86,11 +159,9 @@ def process_file(file_path, log_callback):
     icon_dir = os.path.dirname(icon_file)
     original_name = os.path.basename(icon_file)
 
-    import re
-
     base_name = original_name
 
-    match = re.match(r"^(.*?)(_new(\d+)?)?(\.[^.]+)$",base_name,re.IGNORECASE)
+    match = re.match(r"^(.*?)(_new(\d+)?)?(\.[^.]+)$", base_name, re.IGNORECASE)
 
     if match:
         root_name = match.group(1)
@@ -116,11 +187,11 @@ def process_file(file_path, log_callback):
 
     os.makedirs(icon_dir, exist_ok=True)
 
-    log_callback(f"Limpando ícones antigos de {root_name}...")
+    log_callback(T["cleaning_icons"].format(name=root_name))
 
     for f in os.listdir(icon_dir):
         try:
-            file_root = re.sub(r"_new\d*","",os.path.splitext(f)[0],flags=re.IGNORECASE)
+            file_root = re.sub(r"_new\d*", "", os.path.splitext(f)[0], flags=re.IGNORECASE)
 
             if (
                 file_root.lower() == root_name.lower()
@@ -136,10 +207,10 @@ def process_file(file_path, log_callback):
         f"steamcommunity/public/images/apps/{gameid}/{clean_name}"
     )
 
-    log_callback(f"Baixando: {clean_name}")
+    log_callback(T["downloading"].format(name=clean_name))
 
     if not download_file(icon_url, icon_file_original):
-        log_callback(f"[ERRO DOWNLOAD] {clean_name}")
+        log_callback(T["error_download"].format(name=clean_name))
         return False
 
     if os.path.getsize(icon_file_original) < MIN_ICON_SIZE:
@@ -148,13 +219,13 @@ def process_file(file_path, log_callback):
         except:
             pass
 
-        log_callback(f"[INVALIDO] {clean_name}")
+        log_callback(T["invalid_icon"].format(name=clean_name))
         return False
 
     try:
         os.rename(icon_file_original, icon_file_new)
     except Exception as e:
-        log_callback(f"[ERRO RENOMEAR] {e}")
+        log_callback(T["error_rename"].format(err=e))
         return False
 
     try:
@@ -175,10 +246,10 @@ def process_file(file_path, log_callback):
         )
 
     except Exception as e:
-        log_callback(f"[ERRO URL] {e}")
+        log_callback(T["error_url"].format(err=e))
         return False
 
-    log_callback(f"[OK] {new_name}")
+    log_callback(T["ok"].format(name=new_name))
     return True
 
 
@@ -186,9 +257,7 @@ class App:
     def __init__(self, root):
         self.root = root
 
-        self.root.title(
-            "Steam Icon Fixer 1.1 - phobosfreeware.blogspot.com"
-        )
+        self.root.title(T["window_title"])
 
         self.root.geometry("600x380")
 
@@ -199,14 +268,14 @@ class App:
 
         self.btn_scan = ttk.Button(
             frame,
-            text="🔍 Escanear Desktop",
+            text=T["btn_scan"],
             command=self.scan
         )
         self.btn_scan.pack(fill="x", pady=5)
 
         self.btn_fix = ttk.Button(
             frame,
-            text="🛠 Corrigir Tudo",
+            text=T["btn_fix"],
             command=self.fix,
             state="disabled"
         )
@@ -238,11 +307,11 @@ class App:
         self.root.after(100, self.process_queue)
 
     def scan(self):
-        self.log_msg("Escaneando Desktop...")
+        self.log_msg(T["scanning"])
 
         self.files = find_steam_shortcuts()
 
-        self.log_msg(f"Encontrados: {len(self.files)} atalhos")
+        self.log_msg(T["found_shortcuts"].format(n=len(self.files)))
 
         if self.files:
             self.btn_fix.config(state="normal")
@@ -250,8 +319,8 @@ class App:
     def fix(self):
         if not self.files:
             messagebox.showwarning(
-                "Aviso",
-                "Faça o scan primeiro"
+                T["warning_title"],
+                T["scan_first"]
             )
             return
 
@@ -286,24 +355,22 @@ class App:
             self.queue.put(("progress", i + 1))
 
         if alterou:
-            self.log_msg(
-                "Correção concluída com sucesso."
-            )
+            self.log_msg(T["fix_success"])
 
             self.root.after(
                 0,
                 lambda: self.btn_fix.config(state="normal")
             )
         else:
-            self.log_msg("Nada para corrigir")
+            self.log_msg(T["nothing_to_fix"])
 
-        self.log_msg("Finalizado!")
+        self.log_msg(T["finished_log"])
 
         self.root.after(
             0,
             lambda: messagebox.showinfo(
-                "Finalizado",
-                "Processo concluído!"
+                T["finished_title"],
+                T["finished_message"]
             )
         )
 
