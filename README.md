@@ -1,12 +1,20 @@
-<img width="1024" alt="Steam Icon Fixer" src="https://github.com/user-attachments/assets/c274ea2c-d702-4d51-91a2-8d2e648b3e7e" />
+<h1 align="center">
+  <img width="500" alt="ChatGPT Image 24 de set  de 2026, 17_05_44" src="https://github.com/user-attachments/assets/c3227584-42ec-4d0d-ac5b-8e365569e5d5" />
+</h1>
 
-<p align="center"><br>
+<p align="center">
+A simple and automated tool that fixes broken or missing desktop icons for Steam games.
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Status-Active-success">
   <img src="https://img.shields.io/badge/Language-Python-blue">
   <img src="https://img.shields.io/badge/Type-Utility-lightgrey">
   <img src="https://img.shields.io/badge/Languages-PT--BR%20%7C%20EN-purple">
   <img src="https://img.shields.io/badge/Platform-Windows-blue">
 </p>
+
+---
 
 ## 📌 About
 
