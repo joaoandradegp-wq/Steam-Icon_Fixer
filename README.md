@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img width="500" alt="ChatGPT Image 24 de set  de 2026, 17_05_44" src="https://github.com/user-attachments/assets/c3227584-42ec-4d0d-ac5b-8e365569e5d5" />
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/bceb7d3d-b6bf-4c10-b81e-9d2aed7b3382" />
 </h1>
 
 <p align="center">
